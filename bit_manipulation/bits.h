@@ -12,8 +12,8 @@
 int is_power_of_2(size_t n);
 int right_most_set_bit(size_t n);
 int count_set_bits(size_t n);
-int turn_me_on(size_t n, size_t index);
-int turn_me_off(size_t n, size_t index);
+int turn_me_on(size_t *n, size_t index);
+int turn_me_off(size_t *n, size_t index);
 int num_of_trailing_zeros(size_t n);
 
 /* test case function prototypes */

@@ -8,12 +8,15 @@
  */
 void test_right_most_set_bit(size_t *array_of_numbers)
 {
-	size_t correct_value[SIZE] = {4, 1, 2, 10, 1, 2, 1, 1, 2, 2};
-	size_t i;
+	int correct_value[SIZE] = {3, 0, 2, 9, 0, 1, 0, 0, 1, -1};
+	int i;
 
-	printf("Testing thre")
+	printf("Testing the right_most_set_bit() function ... ");
+
 	for (i = 0; i < SIZE; i++)
 	{
-		assert(right_most_set_bit(array_of_numbers[i]) == correct_value[i]);
+		assert(right_most_set_bit((int)array_of_numbers[i]) == correct_value[i]);
 	}
+
+	puts("PASSED");
 }
