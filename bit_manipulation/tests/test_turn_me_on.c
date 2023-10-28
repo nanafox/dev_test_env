@@ -1,4 +1,4 @@
-#include "bits.h"
+#include "../bits.h"
 
 /**
  * test_turn_me_on - tests the function that implements the logic
@@ -17,7 +17,7 @@ void test_turn_me_on(size_t *array_of_numbers)
 
 	for (i = 0; i < SIZE; i++)
 	{
-		assert(turn_me_on(&array_of_numbers[i], indices[i]) == return_values[i]);
+		assert((int)turn_me_on(&array_of_numbers[i], indices[i]) == return_values[i]);
 		assert(array_of_numbers[i] == correct_values[i]);
 	}
 

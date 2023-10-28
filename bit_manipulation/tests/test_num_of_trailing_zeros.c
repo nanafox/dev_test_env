@@ -1,4 +1,4 @@
-#include "bits.h"
+#include "../bits.h"
 
 /**
  * test_num_of_trailing_zeros - tests the function that implements the logic
@@ -8,14 +8,14 @@
  */
 void test_num_of_trailing_zeros(size_t *array_of_numbers)
 {
-	int correct_value[SIZE] = {3, 0, 2, 9, 0, 1, 0, 0, 1, 0};
+	int correct_values[SIZE] = {3, 0, 2, 10, 0, 1, 0, 0, 1, 0};
 	int i;
 
 	printf("Testing the num_of_trailing_zeros() function ... ");
 
 	for (i = 0; i < SIZE; i++)
 	{
-		assert(num_of_trailing_zeros((int)array_of_numbers[i]) == correct_value[i]);
+		assert((int)num_of_trailing_zeros(array_of_numbers[i]) == correct_values[i]);
 	}
 
 	puts("PASSED");

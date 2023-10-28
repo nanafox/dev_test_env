@@ -1,4 +1,4 @@
-#include "bits.h"
+#include "../bits.h"
 
 /**
  * main - driver code to test your functions
@@ -13,11 +13,11 @@ int main(void)
 	puts("======================== TEST CASES ========================\n");
 
 	test_is_power_of_2(numbers);
+	test_num_of_trailing_zeros(numbers);
 	test_count_set_bits(numbers);
+	test_right_most_set_bit(numbers);
 	test_turn_me_on(numbers);
 	test_turn_me_off(turn_off);
-	test_num_of_trailing_zeros(numbers);
-	test_right_most_set_bit(numbers);
 
 	puts("\nAll test cases passed");
 

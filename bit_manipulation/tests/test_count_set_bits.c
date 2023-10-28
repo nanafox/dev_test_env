@@ -1,4 +1,4 @@
-#include "bits.h"
+#include "../bits.h"
 
 /**
  * test_count_set_bits - tests the function that implements the logic
@@ -8,14 +8,14 @@
  */
 void test_count_set_bits(size_t *array_of_numbers)
 {
-	int correct_value[SIZE] = {1, 2, 1, 1, 2, 4, 5, 1, 2, 0};
+	int correct_values[SIZE] = {1, 2, 1, 1, 2, 4, 4, 1, 2, 0};
 	int i;
 
 	printf("Testing the count_set_bits() function ... ");
 
 	for (i = 0; i < SIZE; i++)
 	{
-		assert(count_set_bits((int)array_of_numbers[i]) == correct_value[i]);
+		assert(count_set_bits((int)array_of_numbers[i]) == correct_values[i]);
 	}
 
 	puts("PASSED");

@@ -1,4 +1,4 @@
-#include "bits.h"
+#include "../bits.h"
 
 /**
  * test_is_power_of_2 - tests the function that implements the logic
