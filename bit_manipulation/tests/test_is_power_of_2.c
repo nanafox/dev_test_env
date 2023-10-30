@@ -11,7 +11,7 @@ void test_is_power_of_2(size_t *array_of_numbers)
 	int i;
 	int correct_values[SIZE] = {1, 0, 1, 1, 0, 0, 0, 1, 0, 0};
 
-	printf("Testing is_power_of_2() function ... ");
+	printf("Testing the is_power_of_2() function ... ");
 
 	for (i = 0; i < SIZE; i++)
 	{

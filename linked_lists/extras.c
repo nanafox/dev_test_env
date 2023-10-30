@@ -76,13 +76,13 @@ void _free(void **ptr)
 }
 
 /**
- * comparator - returns 1 if x is less than y, else 0 otherwise
+ * compare - returns 1 if x is less than y, else 0 otherwise
  * @x: value for x
  * @y: value for y
  *
  * Return: 1 if x less than y, 0 otherwise
  */
-int desc_comparator(int x, int y)
+int compare(int x, int y)
 {
 	return (x < y);
 }

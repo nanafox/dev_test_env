@@ -22,6 +22,7 @@ size_t print_list(Node *head);
 size_t list_len(Node *head);
 void free_list(Node **head);
 void _free(void **ptr);
+int compare(int x, int y);
 #define safe_free(p) _free((void **) &(p))
 
 #endif /* NODE_H */
