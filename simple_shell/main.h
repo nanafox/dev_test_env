@@ -26,6 +26,7 @@ int _strcmp(const char *s1, const char *s2);
 char **_strtok(const char *str, const char *delim);
 char *_strncpy(char *dest, const char *src, size_t n);
 int get_word_count(const char *str, const char *delim);
+char *handle_comments(char *command);
 
 /* memory handlers */
 
