@@ -47,6 +47,7 @@ int main(__attribute__((unused)) int argc,
 		}
 		if (!pid && n_read > 0)
 		{
+			line = handle_comments(line);
 			args = _strtok(line, NULL);
 			retval = execve(args[0], args, env);
 			if (retval == -1)
