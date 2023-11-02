@@ -1,8 +1,8 @@
 #include "main.h"
 
 /**
- * handle_comments - parses a command received on the shell and handles comments
- * if any.
+ * handle_comments - parses a command received on the shell and handles the '#'
+ * symbol (comments) if any.
  * @command: the command line string
  *
  * Description: The shell doesn't need to process comments so the job of this
@@ -12,8 +12,8 @@
  * comments before the command is passed to other functions which handle the
  * execution, or further processing if required.
  *
- * Return: the updated (if needed) command string ready for execution or further
- * processing.
+ * Return: the updated (if needed) command string ready for execution or for
+ * further processing.
  */
 char *handle_comments(char *command)
 {
@@ -27,7 +27,7 @@ char *handle_comments(char *command)
 	offset = (&loc[0]) - (&command[0]);
 
 	/* handle the termination properly */
-	if (command[offset - 1] == ' ')
+	if (isspace(command[offset - 1]))
 		command[offset - 1] = '\0';
 	else
 		command[offset] = '\0';
