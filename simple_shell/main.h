@@ -11,11 +11,11 @@
 /* macros */
 
 #define BUFF_SIZE 1024
-#define RUNNING 1
-#define STOPPED 0
 #define SPACE ' '
-#define IN_WORD 1
-#define OUT_WORD 0
+
+/* function macros */
+
+#define isspace(c) ((c) == SPACE)
 
 /* function prototypes */
 
