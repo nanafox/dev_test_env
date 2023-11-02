@@ -1,7 +1,7 @@
 #include "node.h"
 #define SIZE 10
 
-void test_size(Node *list, int expected_size)
+void test_size(Node *list, size_t expected_size)
 {
 	assert(list_len(list) == expected_size);
 }
@@ -36,7 +36,6 @@ int main(void)
 	test_size(list1, 10);
 	test_size(list2, 5);
 	puts("PASSED");
-
 
 	puts("\nAll test cases passed");
 
