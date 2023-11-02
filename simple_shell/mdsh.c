@@ -13,10 +13,10 @@ int main(__attribute__((unused)) int argc,
 	char **args, *line = NULL;
 	size_t len = 0;
 	ssize_t n_read = 0;
-	int status, retval, active_state = RUNNING;
+	int status, retval, running = 1;
 	pid_t pid;
 
-	while (active_state == RUNNING)
+	while (running)
 	{
 		printf("mdsh$ ");
 		fflush(stdout);
@@ -32,12 +32,11 @@ int main(__attribute__((unused)) int argc,
 		{
 			printf("\n");
 			safe_free(line);
-			active_state = 0;
 			/* most definitely Ctrl+D or Ctrl+C was received */
 			return (0);
 		}
-		if (n_read == 1 && *line == '\0')
-			continue; /* skip normal ENTER keys */
+		if ((n_read == 1 && *line == '\0') || *line == '#')
+			continue; /* skip normal ENTER keys and comments */
 
 		pid = fork();
 		if (pid == -1)
