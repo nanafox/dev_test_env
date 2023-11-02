@@ -8,9 +8,9 @@
  * Return: 0
  */
 int main(__attribute__((unused)) int argc,
-		 __attribute__((unused)) char *argv[], char *env[])
+		__attribute__((unused)) char *argv[], char *env[])
 {
-	char **words, *line = NULL;
+	char **args, *line = NULL;
 	size_t len = 0;
 	ssize_t n_read = 0;
 	int status, retval, active_state = RUNNING;
@@ -18,8 +18,6 @@ int main(__attribute__((unused)) int argc,
 
 	while (active_state == RUNNING)
 	{
-		char path[30] = "/bin/";
-
 		printf("mdsh$ ");
 		fflush(stdout);
 
@@ -34,8 +32,9 @@ int main(__attribute__((unused)) int argc,
 		{
 			printf("\n");
 			safe_free(line);
-			/* most definitely Ctrl+D or Ctrl+C was received */
 			active_state = 0;
+			/* most definitely Ctrl+D or Ctrl+C was received */
+			return (0);
 		}
 		if (n_read == 1 && *line == '\0')
 			continue; /* skip normal ENTER keys */
@@ -48,15 +47,14 @@ int main(__attribute__((unused)) int argc,
 		}
 		if (!pid && n_read > 0)
 		{
-			words = _strtok(line, NULL);
-			_strcat(path, words[0]);
-			retval = execve(path, &words[0], env);
+			args = _strtok(line, NULL);
+			retval = execve(args[0], args, env);
 			if (retval == -1)
 			{
 				perror("execve");
 				continue;
 			}
-			safe_free(words);
+			safe_free(args);
 		}
 		else
 			wait(&status); /* wait for the child process */
