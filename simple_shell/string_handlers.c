@@ -31,7 +31,7 @@ char **_strtok(const char *str, const char *delim)
 	for (i = 0; i < len; i++)
 	{
 		if ((!_strchr(tmp_delim, str[i]) && _strchr(tmp_delim, str[i + 1])) ||
-			str[i + 1] == '\0')
+			(!_strchr(tmp_delim, str[i]) && str[i + 1] == '\0'))
 		{
 			word_end = i + 1;
 			str_array[index] = new_word(str, word_start, word_end);
