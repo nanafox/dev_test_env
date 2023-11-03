@@ -16,6 +16,9 @@ int get_word_count(const char *str, const char *delim)
 	if (str == NULL || *str == '\0')
 		return (0);
 
+	if (delim == NULL)
+		tmp_delim = " \t";
+
 	while (*str)
 	{
 		if (_strchr(tmp_delim, *str))
