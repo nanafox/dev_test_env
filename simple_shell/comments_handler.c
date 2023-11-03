@@ -26,6 +26,10 @@ char *handle_comments(char *command)
 	/* let's get the index where this bad boy exists */
 	offset = (&loc[0]) - (&command[0]);
 
+	/* check for when a '#' was found but it's not the start of a comment */
+	if (loc && !isspace(command[offset - 1]))
+		return (command);
+
 	/* handle the termination properly */
 	if (isspace(command[offset - 1]))
 		command[offset - 1] = '\0';
