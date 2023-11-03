@@ -13,7 +13,7 @@ ssize_t _getline(char **lineptr, size_t *n, int fd)
 	ssize_t n_read;
 	size_t total_read, buffer_size = BUFF_SIZE;
 
-	if (*lineptr == NULL && *n == 0) /* check if we should allocate memory */
+	if (*lineptr == NULL) /* check if we should allocate memory */
 	{
 		*lineptr = malloc(sizeof(char) * (buffer_size + 1));
 		if (*lineptr == NULL)
@@ -24,7 +24,7 @@ ssize_t _getline(char **lineptr, size_t *n, int fd)
 	{
 		total_read += n_read;
 		/* check if the buffer needs to be resized */
-		if (total_read >= *n)
+		if (total_read >= buffer_size)
 		{
 			buffer_size *= 2;
 			*lineptr = _realloc(*lineptr, total_read, buffer_size);
