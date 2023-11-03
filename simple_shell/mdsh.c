@@ -18,7 +18,7 @@ int main(__attribute__((unused)) int argc,
 
 	while (running)
 	{
-		printf("mdsh$ ");
+		/*printf("mdsh$ ");*/
 		fflush(stdout);
 
 		n_read = _getline(&line, &len, STDIN_FILENO);
@@ -31,7 +31,7 @@ int main(__attribute__((unused)) int argc,
 
 		if (n_read == 0)
 		{
-			printf("\n");
+			/*printf("\n");*/
 			safe_free(line);
 			/* most definitely Ctrl+D or Ctrl+C was received */
 			return (0);
