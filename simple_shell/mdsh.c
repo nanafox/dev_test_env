@@ -10,7 +10,7 @@
 int main(__attribute__((unused)) int argc,
 		__attribute__((unused)) char *argv[], char *env[])
 {
-	char **args, *line = NULL;
+	char **args = NULL, *line = NULL;
 	size_t len = 0;
 	ssize_t n_read = 0;
 	int status, retval, running = 1;
@@ -24,6 +24,7 @@ int main(__attribute__((unused)) int argc,
 		n_read = _getline(&line, &len, STDIN_FILENO);
 		if (n_read == -1)
 		{
+			safe_free(line);
 			perror("_getline");
 			return (-1);
 		}
@@ -41,6 +42,7 @@ int main(__attribute__((unused)) int argc,
 		pid = fork();
 		if (pid == -1)
 		{
+			safe_free(line);
 			perror("fork");
 			return (-1);
 		}
@@ -48,21 +50,30 @@ int main(__attribute__((unused)) int argc,
 		{
 			line = handle_comments(line);
 			args = _strtok(line, NULL);
-			retval = execve(args[0], args, env);
-			if (retval == -1)
+			if (args)
 			{
-				perror("execve");
-				continue;
+				retval = execve(args[0], args, env);
+				safe_free(line);
+				free_str(args);
+				if (retval == -1)
+				{
+					perror("execve");
+					fflush(stdout);
+					break; /* get out the failed process */
+				}
 			}
-			safe_free(args);
+			else
+			{
+				safe_free(line);
+				break;
+			}
 		}
 		else
-			wait(&status); /* wait for the child process */
-
-		safe_free(line);
-		len = 0;
+		{
+			if (waitpid(pid, &status, 0) == -1) /* wait for the child process */
+				perror("wait");
+		}
 	}
-	safe_free(line);
 
 	return (0);
 }
