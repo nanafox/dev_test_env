@@ -14,10 +14,11 @@ char *_getenv(const char *name)
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		/* check if we found a match */
-		if (_strstr(environ[i], name))
+		if (_strspn(environ[i], name))
 		{
-			/* move past the equal to sign and return the actual value */
-			return ((_strchr(environ[i], '=')) + 1);
+			if (_strstr(environ[i], name))
+				/* move past the equal to sign and return the actual value */
+				return ((_strchr(environ[i], '=')) + 1);
 		}
 	}
 
@@ -46,10 +47,14 @@ void _printenv(void)
 path_t *build_path(path_t **head)
 {
 	size_t i = 0;
-	char *path_value = _getenv("PATH");
-	char **pathnames = _strtok(path_value, ":");
+	char *path_value, **pathnames;
 	path_t *new_node, *tail;
 
+	path_value = _getenv("PATH");
+	if (path_value == NULL || *path_value == '\0')
+		return (NULL);
+
+	pathnames = _strtok(path_value, ":");
 	while (pathnames[i] != NULL)
 	{
 		new_node = malloc(sizeof(path_t));
@@ -80,6 +85,5 @@ path_t *build_path(path_t **head)
 	}
 
 	free_str(pathnames);
-
 	return (*head);
 }
