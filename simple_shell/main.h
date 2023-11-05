@@ -13,6 +13,7 @@
 
 #define BUFF_SIZE 1024
 #define SPACE ' '
+#define CMD_NOT_FOUND 127
 
 /* function macros */
 
@@ -31,6 +32,8 @@ char **_strtok(const char *str, const char *delim);
 char *_strncpy(char *dest, const char *src, size_t n);
 int get_word_count(const char *str, const char *delim);
 char *_strstr(const char *haystack, const char *needle);
+char *_strpbrk(const char *s, const char *accept);
+size_t _strspn(const char *s, const char *accept);
 
 /* memory handlers */
 
@@ -66,5 +69,11 @@ void _printenv(void);
 void free_list(path_t **head);
 char *_getenv(const char *name);
 path_t *build_path(path_t **head);
+
+
+int parse_line(char *line, path_t *path_list);
+int execute_command(char *pathname, char *argv[]);
+int parse_and_execute(char **commands, path_t *path_list);
+int handle_with_path(path_t *path_list, char **sub_command);
 
 #endif /* MAIN_H */
