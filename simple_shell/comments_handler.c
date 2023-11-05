@@ -27,14 +27,15 @@ char *handle_comments(char *command)
 	offset = (&loc[0]) - (&command[0]);
 
 	/* check for when a '#' was found but it's not the start of a comment */
-	if (loc && !isspace(command[offset - 1]))
-		return (command);
-
-	/* handle the termination properly */
-	if (isspace(command[offset - 1]))
-		command[offset - 1] = '\0';
+	if (!isspace(command[offset - 1]))
+	{
+		return (command); /* return the command as received, don't touch it */
+	}
 	else
-		command[offset] = '\0';
+	{
+		/* yeah! that's a comment, handle the termination properly */
+		command[offset - 1] = '\0';
+	}
 
 	return (command);
 }
