@@ -2,13 +2,9 @@
 
 /**
  * main - tests the custom getline function
- * @argc: counter
- * @argv: vector
- * @env: env
  * Return: 0
  */
-int main(__attribute__((unused)) int argc,
-		__attribute__((unused)) char *argv[], char *env[])
+int main(void)
 {
 	char **args = NULL, *line = NULL;
 	size_t len = 0;
@@ -48,11 +44,12 @@ int main(__attribute__((unused)) int argc,
 		}
 		if (!pid && n_read > 0)
 		{
+			/* line = parse_line(line) */
 			line = handle_comments(line);
 			args = _strtok(line, NULL);
 			if (args)
 			{
-				retval = execve(args[0], args, env);
+				retval = execve(args[0], args, environ);
 				safe_free(line);
 				free_str(args);
 				if (retval == -1)

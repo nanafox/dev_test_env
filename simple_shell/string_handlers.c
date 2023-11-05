@@ -15,7 +15,7 @@ char **_strtok(const char *str, const char *delim)
 	char *tmp_delim = (char *)delim;
 
 	if (delim == NULL)
-		tmp_delim = " \t"; /* assume spaces and tabs if delimeteter is NULL */
+		tmp_delim = " \t\n"; /* assume spaces, tabs and newline */
 
 	word_count = get_word_count(str, tmp_delim);
 	if (word_count == 0)
