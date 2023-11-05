@@ -34,7 +34,7 @@ ssize_t _getline(char **lineptr, size_t *n, int fd)
 		}
 		if (total_read && (*lineptr)[total_read - 1] == '\n')
 		{
-			(*lineptr)[total_read - 1] = '\0';
+			(*lineptr)[total_read] = '\0';
 			*n = total_read;
 			return (total_read);
 		}
