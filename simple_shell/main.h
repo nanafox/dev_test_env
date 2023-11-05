@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 /* macros */
@@ -20,13 +21,16 @@
 /* function prototypes */
 
 size_t _strlen(const char *s);
+char *_strdup(const char *str);
+char *handle_comments(char *command);
+char *_strcpy(char *dest, const char *src);
 char *_strcat(char *dest, const char *src);
 char *_strchr(const char *s, const char c);
 int _strcmp(const char *s1, const char *s2);
 char **_strtok(const char *str, const char *delim);
 char *_strncpy(char *dest, const char *src, size_t n);
 int get_word_count(const char *str, const char *delim);
-char *handle_comments(char *command);
+char *_strstr(const char *haystack, const char *needle);
 
 /* memory handlers */
 
@@ -41,5 +45,26 @@ void _free(void **ptr);
 
 /* a custom implementation of the getline function */
 ssize_t _getline(char **lineptr, size_t *n, int fd);
+
+/* environment variables */
+
+extern char **environ;
+
+/**
+ * struct _path - builds a linked list of the PATH variable in an environment
+ * variable
+ * @pathname: each path name in the PATH variable
+ * @next: a pointer to the next node
+ */
+typedef struct _path
+{
+	char *pathname;
+	struct _path *next;
+} path_t;
+
+void _printenv(void);
+void free_list(path_t **head);
+char *_getenv(const char *name);
+path_t *build_path(path_t **head);
 
 #endif /* MAIN_H */
