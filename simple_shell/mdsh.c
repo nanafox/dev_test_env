@@ -12,7 +12,7 @@ int main(void)
 	int retval = 0, running = 1;
 	path_t *path_list = NULL;
 
-	build_path(&path_list);
+	path_list = build_path(&path_list);
 
 	while (running)
 	{
