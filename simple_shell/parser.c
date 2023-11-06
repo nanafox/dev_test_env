@@ -61,9 +61,11 @@ int parse_and_execute(char **commands, path_t *path_list)
 		}
 		else
 		{
-			struct stat st;
-
-			if (sub_command && stat(sub_command[0], &st) == 0)
+			/*
+			 * if the command is not in the PATH, then the absolute or relative
+			 * must be given
+			 */
+			if (access(sub_command[0], X_OK) == 0 && _strchr(sub_command[0], '/'))
 				retval = execute_command(sub_command[0], sub_command);
 			else
 				retval = print_cmd_not_found(sub_command, commands, i);
@@ -86,17 +88,16 @@ int parse_and_execute(char **commands, path_t *path_list)
  */
 int handle_with_path(path_t *path_list, char **sub_command)
 {
-	char path[50];
-	struct stat st;
+	char path[BUFF_SIZE];
 
-	while (path_list != NULL && sub_command != NULL)
+	while (path_list != NULL)
 	{
 		sprintf(path, "%s%s%s", path_list->pathname, "/", sub_command[0]);
-		if (stat(path, &st) == 0)
+		if (access(path, X_OK) == 0)
 		{
 			return (execute_command(path, sub_command));
 		}
-		else if (stat(sub_command[0], &st) == 0)
+		else if (access(sub_command[0], X_OK) == 0)
 		{
 			return (execute_command(sub_command[0], sub_command));
 		}
