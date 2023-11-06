@@ -17,8 +17,12 @@ int main(int argc, char *argv[])
 
 	path_list = build_path(&path_list);
 	if (argc >= 2)
-		return (handle_file_as_input(argv[1], path_list));
+	{
+		retval = handle_file_as_input(argv[1], path_list);
+		free_list(&path_list);
 
+		return (retval);
+	}
 	while (running)
 	{
 		/*printf("mdsh$ ");*/
@@ -31,13 +35,10 @@ int main(int argc, char *argv[])
 			perror("_getline");
 			return (-1);
 		}
-
-		if (n_read == 0)
+		if (n_read == 0) /* most definitely Ctrl+D or Ctrl+C was received */
 		{
-			/*printf("\n");*/
 			safe_free(line);
 			free_list(&path_list);
-			/* most definitely Ctrl+D or Ctrl+C was received */
 			return (retval);
 		}
 		if ((n_read == 1 && *line == '\n') || *line == '#')
@@ -47,6 +48,5 @@ int main(int argc, char *argv[])
 		safe_free(line);
 	}
 	free_list(&path_list);
-
 	return (retval);
 }
