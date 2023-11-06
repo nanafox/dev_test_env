@@ -69,11 +69,14 @@ void _printenv(void);
 void free_list(path_t **head);
 char *_getenv(const char *name);
 path_t *build_path(path_t **head);
+void print_path(path_t *list);
 
+/* parsers and executors */
 
 int parse_line(char *line, path_t *path_list);
 int execute_command(char *pathname, char *argv[]);
 int parse_and_execute(char **commands, path_t *path_list);
 int handle_with_path(path_t *path_list, char **sub_command);
+int print_cmd_not_found(char **sub_command, char **commands, size_t index);
 
 #endif /* MAIN_H */
