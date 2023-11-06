@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 /* macros */
 
@@ -78,5 +79,6 @@ int execute_command(char *pathname, char *argv[]);
 int parse_and_execute(char **commands, path_t *path_list);
 int handle_with_path(path_t *path_list, char **sub_command);
 int print_cmd_not_found(char **sub_command, char **commands, size_t index);
+int handle_file_as_input(char *filename, path_t *path_list);
 
 #endif /* MAIN_H */

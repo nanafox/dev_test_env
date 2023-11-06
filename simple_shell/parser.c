@@ -130,3 +130,40 @@ int print_cmd_not_found(char **sub_command, char **commands, size_t index)
 
 	return (0);
 }
+
+/**
+ * handle_file_as_input - handles execution when a file is given as input on
+ * the command line (non-interactive mode)
+ * @filename: the name of file containing the commands
+ * @path_list: a list of pathnames in the PATH variable
+ *
+ * Return: 0, or the exit status of the just exited process
+ */
+int handle_file_as_input(char *filename, path_t *path_list)
+{
+	char *line = NULL;
+	size_t n = 0;
+	int n_read, fd, retval;
+
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+	{
+		dprintf(2, "./hsh: 0: Can't open %s\n", filename);
+		return (CMD_NOT_FOUND);
+	}
+
+	n_read = _getline(&line, &n, fd);
+	close(fd);
+
+	if (n_read == -1)
+	{
+		return (-1); /* reading file failed */
+	}
+
+	if (n_read)
+		retval = parse_line(line, path_list);
+
+	safe_free(line);
+
+	return (retval);
+}

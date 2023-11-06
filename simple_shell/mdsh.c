@@ -2,9 +2,12 @@
 
 /**
  * main - tests the custom getline function
- * Return: 0
+ * @argc: command line arguments counter
+ * @argv: command line arguments
+ *
+ * Return: 0 on success or an exit code of the just exited process
  */
-int main(void)
+int main(int argc, char *argv[])
 {
 	char *line = NULL;
 	size_t len = 0;
@@ -13,6 +16,8 @@ int main(void)
 	path_t *path_list = NULL;
 
 	path_list = build_path(&path_list);
+	if (argc >= 2)
+		return (handle_file_as_input(argv[1], path_list));
 
 	while (running)
 	{
