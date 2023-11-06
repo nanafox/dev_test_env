@@ -10,17 +10,15 @@
 char *_getenv(const char *name)
 {
 	int i;
+	size_t len = _strlen(name);
 
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		/* check if we found a match */
-		if (_strspn(environ[i], name))
+		if (_strstr(environ[i], name) && environ[i][len] == '=')
 		{
-			if (_strstr(environ[i], name))
-			{
-				/* move past the equal to sign and return the actual value */
-				return ((_strchr(environ[i], '=')) + 1);
-			}
+			/* move past the equal to sign and return the actual value */
+			return ((_strchr(environ[i], '=')) + 1);
 		}
 	}
 
