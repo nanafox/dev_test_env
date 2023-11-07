@@ -43,3 +43,36 @@ void _reverse(char *buffer, size_t len)
 		buffer[len - i - 1] = c;
 	}
 }
+
+
+/**
+ * _atoi - converts a string to an integer
+ * @s: string
+ *
+ * Return: The converted value or 0 on error
+ */
+int _atoi(const char *s)
+{
+	unsigned int num = 0;
+	int i, sign;
+
+	sign = 1; /* assume positive sign */
+
+	for (i = 0; !(isdigit(s[i])); i++)
+	{
+		if (s[i] == '\0') /* empty string or no digits */
+			break;
+		else if (isspace(s[i]) || isalpha(s[i]))
+			continue; /* skip characters and whitespaces */
+		else if (issign(s[i]))
+			sign *= isnegative(s[i]); /* update sign */
+	}
+
+	while (isdigit(s[i]))
+	{
+		num = 10 * num + (s[i] - '0');
+		i++;
+	}
+
+	return (num * sign);
+}
