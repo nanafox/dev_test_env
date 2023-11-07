@@ -80,5 +80,9 @@ int parse_and_execute(char **commands, path_t *path_list);
 int handle_with_path(path_t *path_list, char **sub_command);
 int print_cmd_not_found(char **sub_command, char **commands, size_t index);
 int handle_file_as_input(char *filename, path_t *path_list);
+char **handle_variables(char **commands, int exit_code);
+
+void _reverse(char *buffer, size_t len);
+void _itoa(size_t n, char *s);
 
 #endif /* MAIN_H */

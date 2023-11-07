@@ -1,5 +1,7 @@
 #include "main.h"
 
+static int exit_code; /* keeps track of all exit codes */
+
 /**
  * parse_line - parses the receive command line, processes it before handing it
  * over to the executor only after it has confirmed the command is valid
@@ -12,6 +14,10 @@
 int parse_line(char *line, path_t *path_list)
 {
 	char **commands = NULL;
+
+	/* skip normal ENTER keys and leading comments */
+	if (*line == '\n' || *line == '#')
+		return (0);
 
 	/* first of all, let's get rid of all comments */
 	line = handle_comments(line);
@@ -37,7 +43,6 @@ int parse_line(char *line, path_t *path_list)
  */
 int parse_and_execute(char **commands, path_t *path_list)
 {
-	ssize_t retval = 0;
 	size_t i;
 	char **sub_command = NULL;
 
@@ -52,30 +57,28 @@ int parse_and_execute(char **commands, path_t *path_list)
 			return (0); /* probably just lots of tabs or spaces, maybe both */
 		}
 
-		if (path_list != NULL)
+		sub_command = handle_variables(sub_command, exit_code);
+		if (!_strcmp(sub_command[0], "env"))
+			_printenv();
+		else if (path_list != NULL) /* handle the command with the PATH variable */
 		{
-			/* handle the command with the PATH variable */
-			retval = handle_with_path(path_list, sub_command);
-			if (retval == -1)
-				retval = print_cmd_not_found(sub_command, commands, i);
+			exit_code = handle_with_path(path_list, sub_command);
+			if (exit_code == -1)
+				exit_code = print_cmd_not_found(sub_command, commands, i);
 		}
 		else
 		{
-			/*
-			 * if the command is not in the PATH, then the absolute or relative
-			 * must be given
-			 */
 			if (access(sub_command[0], X_OK) == 0 && _strchr(sub_command[0], '/'))
-				retval = execute_command(sub_command[0], sub_command);
+				exit_code = execute_command(sub_command[0], sub_command);
 			else
-				retval = print_cmd_not_found(sub_command, commands, i);
+				exit_code = print_cmd_not_found(sub_command, commands, i);
 		}
 		safe_free(commands[i]);
 		free_str(sub_command);
 	}
 
 	free_str(commands);
-	return (retval);
+	return (exit_code);
 }
 
 /**
@@ -143,7 +146,7 @@ int handle_file_as_input(char *filename, path_t *path_list)
 {
 	char *line = NULL;
 	size_t n = 0;
-	int n_read, fd, retval;
+	int n_read, fd;
 
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
@@ -161,9 +164,9 @@ int handle_file_as_input(char *filename, path_t *path_list)
 	}
 
 	if (n_read)
-		retval = parse_line(line, path_list);
+		exit_code = parse_line(line, path_list);
 
 	safe_free(line);
 
-	return (retval);
+	return (exit_code);
 }
