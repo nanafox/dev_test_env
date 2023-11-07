@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdarg.h>
 
 /* macros */
 
@@ -19,6 +20,10 @@
 /* function macros */
 
 #define isspace(c) ((c) == SPACE)
+#define isdigit(c) (((c) >= '0' && (c) <= '9')) /* checks for digits */
+#define isalpha(c) (((c) >= 'a' && (c) <= 'z') || ((c) >= 'A' && (c) <= 'Z'))
+#define isnegative(c) (((c) == '-') ? -1 : 1)
+#define issign(c) ((c) == '-' || (c) == '+')
 
 /* function prototypes */
 
@@ -76,13 +81,18 @@ void print_path(path_t *list);
 
 int parse_line(char *line, path_t *path_list);
 int execute_command(char *pathname, char *argv[]);
-int parse_and_execute(char **commands, path_t *path_list);
+int parse_and_execute(char **commands, path_t *path_list, char *line);
 int handle_with_path(path_t *path_list, char **sub_command);
 int print_cmd_not_found(char **sub_command, char **commands, size_t index);
 int handle_file_as_input(char *filename, path_t *path_list);
 char **handle_variables(char **commands, int exit_code);
+int handle_exit(char *exit_code, int status,
+		void (*cleanup)(const char *format, ...),
+		char **sub_command, char **commands, path_t **path_list, char *line);
+void _free_on_exit(const char *format, ...);
 
 void _reverse(char *buffer, size_t len);
 void _itoa(size_t n, char *s);
+int _atoi(const char *s);
 
 #endif /* MAIN_H */

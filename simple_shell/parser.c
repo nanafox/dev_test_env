@@ -30,18 +30,19 @@ int parse_line(char *line, path_t *path_list)
 		return (-1); /* an error occurred while getting the commands */
 	}
 
-	return (parse_and_execute(commands, path_list));
+	return (parse_and_execute(commands, path_list, line));
 }
 
 /**
  * parse_and_execute - parses each sub command line and executes it
  * @commands: an array of command line strings
  * @path_list: a list of pathnames in the PATH variable
+ * @line: the command line received
  *
  * Return: the exit code of the executed program, else -1 if something goes
  * wrong
  */
-int parse_and_execute(char **commands, path_t *path_list)
+int parse_and_execute(char **commands, path_t *path_list, char *line)
 {
 	size_t i;
 	char **sub_command = NULL;
@@ -60,6 +61,9 @@ int parse_and_execute(char **commands, path_t *path_list)
 		sub_command = handle_variables(sub_command, exit_code);
 		if (!_strcmp(sub_command[0], "env"))
 			_printenv();
+		else if (!_strcmp(sub_command[0], "exit"))
+			exit_code = handle_exit(sub_command[1], exit_code,
+					_free_on_exit, sub_command, commands, &path_list, line);
 		else if (path_list != NULL) /* handle the command with the PATH variable */
 		{
 			exit_code = handle_with_path(path_list, sub_command);
