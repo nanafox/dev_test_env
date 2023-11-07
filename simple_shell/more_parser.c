@@ -69,6 +69,7 @@ int handle_exit(char *exit_code, int status,
 		char **sub_command, char **commands, path_t **path_list, char *line)
 {
 	size_t illegal_num_count = 1;
+	int code;
 
 	if (exit_code == NULL)
 	{
@@ -83,10 +84,10 @@ int handle_exit(char *exit_code, int status,
 		illegal_num_count++;
 		return (2);
 	}
-	else
-		exit(atoi(exit_code));
 
-	exit(status);
+	code = _atoi(exit_code);
+	cleanup("ttps", sub_command, commands, path_list, line);
+	exit(code);
 }
 
 /**
