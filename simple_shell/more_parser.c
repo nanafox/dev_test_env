@@ -146,7 +146,12 @@ int handle_cd(char **command)
 	if (command[1] != NULL)
 	{
 		int dash = !_strcmp(command[1], "-");
-		char *path = ((dash) ? oldpath : command[1]);
+		char path[PATH_SIZE];
+
+		if (!_strchr(command[1], '/') && !dash)
+			sprintf(path, "%s/%s", pwd, ((dash) ? oldpath : command[1]));
+		else
+			sprintf(path, "%s", ((dash) ? oldpath : command[1]));
 
 		if (chdir(path) == -1)
 		{
@@ -156,16 +161,15 @@ int handle_cd(char **command)
 			return (2);
 		}
 		if (dash)
-			printf("%s\n", path);
-
+			printf("%s\n", oldpath);
 		setenv("OLDPWD", pwd, 1);
+		getcwd(path, PATH_SIZE);
 		setenv("PWD", path, 1);
 	}
 	else
 	{
 		if (chdir(home) == -1)
 			return (2);
-
 		setenv("OLDPWD", pwd, 1);
 		setenv("PWD", home, 1);
 	}
