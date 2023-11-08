@@ -18,6 +18,8 @@
 #define BUFF_SIZE 1024
 #define SPACE ' '
 #define CMD_NOT_FOUND 127
+#define PROMPT_SIZE 4096
+#define PATH_SIZE 2048
 
 /* function macros */
 
@@ -56,6 +58,9 @@ void _free(void **ptr);
 
 /* a custom implementation of the getline function */
 ssize_t _getline(char **lineptr, size_t *n, int fd);
+
+/* shows the prompt in interactive mode */
+void show_prompt(void);
 
 /* environment variables */
 

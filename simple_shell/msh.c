@@ -9,7 +9,7 @@
  */
 int main(int argc, char *argv[])
 {
-	char prompt[BUFF_SIZE], *line = NULL;
+	char *line = NULL;
 	size_t len = 0;
 	ssize_t n_read = 0;
 	int exit_code = 0, running = 1;
@@ -24,12 +24,7 @@ int main(int argc, char *argv[])
 	}
 	while (running)
 	{
-		char *username = _getenv("USER");
-		char *pwd = strrchr(_getenv("PWD"), '/') + 1;
-
-		sprintf(prompt, "[%s@msh %s]%% ", username,
-				(!_strcmp(pwd, username)) ? "~" : pwd);
-		printf("%s", (isatty(STDIN_FILENO)) ? prompt : "");
+		show_prompt();
 		fflush(stdout);
 
 		n_read = _getline(&line, &len, STDIN_FILENO);
@@ -49,4 +44,39 @@ int main(int argc, char *argv[])
 	free_list(&path_list);
 
 	return (exit_code);
+}
+
+/**
+ * show_prompt - shows the prompt in intercative mode
+ */
+void show_prompt(void)
+{
+	char prompt[PROMPT_SIZE];
+	char *username = _getenv("USER");
+	char *pwd;
+
+	if (username != NULL)
+	{
+		pwd = _getenv("PWD");
+		if (pwd != NULL)
+		{
+			/* get the right directory name to show on the prompt */
+			pwd = (*pwd == '/' && *(pwd + 1) == '\0') ? "/" : (strrchr(pwd, '/') + 1);
+
+			sprintf(prompt, "[%s@msh %s]%% ", username,
+				(!_strcmp(pwd, username)) ? "~" : pwd); /* show '~' for $HOME directory */
+		}
+	}
+	else
+	{
+		/*
+		 * there was not enough environment variables to build a much more
+		 * customized prompt, fall back to the minimal prompt
+		 */
+		sprintf(prompt, "msh%% ");
+	}
+
+	/* show the prompt in interactive modes only */
+	if (isatty(STDIN_FILENO))
+		printf("%s", prompt);
 }
