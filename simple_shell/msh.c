@@ -61,7 +61,7 @@ void show_prompt(void)
 		if (pwd != NULL)
 		{
 			/* get the right directory name to show on the prompt */
-			pwd = (*pwd == '/' && *(pwd + 1) == '\0') ? "/" : (strrchr(pwd, '/') + 1);
+			pwd = (*pwd == '/' && *(pwd + 1) == '\0') ? pwd : (strrchr(pwd, '/') + 1);
 
 			sprintf(prompt, "[%s@msh %s]%% ", username,
 				(!_strcmp(pwd, username)) ? "~" : pwd); /* show '~' for $HOME directory */
