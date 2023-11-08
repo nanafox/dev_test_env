@@ -58,14 +58,13 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 			return (0); /* probably just lots of tabs or spaces, maybe both */
 		}
 		sub_command = handle_variables(sub_command, exit_code);
-		if (!_strcmp(sub_command[0], "env"))
-			_printenv();
-		else if (!_strcmp(sub_command[0], "exit"))
-			exit_code = handle_exit(sub_command[1], exit_code,
-					_free_on_exit, sub_command, commands, &path_list, line);
-		else if (!_strcmp(sub_command[0], "cd"))
-			exit_code = handle_cd(sub_command);
-		else if (path_list != NULL) /* handle the command with the PATH variable */
+		exit_code = handle_builtin(sub_command, commands, path_list, line);
+		if (exit_code != 18)
+		{
+			continue; /* shell builtin execute well */
+		}
+
+		if (path_list != NULL) /* handle the command with the PATH variable */
 		{
 			exit_code = handle_with_path(path_list, sub_command);
 			if (exit_code == -1)
@@ -73,7 +72,8 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 		}
 		else
 		{
-			if (access(sub_command[0], X_OK) == 0 && _strchr(sub_command[0], '/'))
+			if (access(sub_command[0], X_OK) == 0 &&
+				_strchr(sub_command[0], '/'))
 				exit_code = execute_command(sub_command[0], sub_command);
 			else
 				exit_code = print_cmd_not_found(sub_command, commands, i);
@@ -127,8 +127,8 @@ int print_cmd_not_found(char **sub_command, char **commands, size_t index)
 {
 	static size_t err_count = 1;
 
-	dprintf(STDERR_FILENO, "./hsh: %lu: %s: not found\n",
-			err_count, sub_command[0]);
+	dprintf(STDERR_FILENO, "./hsh: %lu: %s: not found\n", err_count,
+			sub_command[0]);
 	err_count++;
 
 	if (commands[index + 1] == NULL)
@@ -156,8 +156,8 @@ int handle_file_as_input(char *filename, path_t *path_list)
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 	{
-		dprintf(2, "./hsh: 0: Can't open %s\n", filename);
-		return (CMD_NOT_FOUND);
+		dprintf(2, "./hsh: 0: cannot open %s: No such file\n", filename);
+		return (2);
 	}
 
 	n_read = _getline(&line, &n, fd);

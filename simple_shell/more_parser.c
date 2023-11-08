@@ -39,7 +39,7 @@ char **handle_variables(char **command, int exit_code)
 			safe_free(command[i]);
 			command[i] = _strdup(result);
 		}
-		/* this is for when somehting like '$HOSTNAME' is received */
+		/* this is for when something like '$HOSTNAME' is received */
 		else
 		{
 			value = _getenv(loc + 1);
@@ -93,7 +93,7 @@ int handle_exit(char *exit_code, int status,
 /**
  * _free_on_exit - frees dynamically allocated memory when the exit command is
  * issued on the command line
- * @format: the format of how dynamically allocated varibles are given
+ * @format: the format of how dynamically allocated variables are given
  *
  * Description: 's' is for a normal string (char *)
  *				't' is for an array of strings (char **)
@@ -131,7 +131,7 @@ void _free_on_exit(const char *format, ...)
  * handle_cd - handles the builtin `cd` command
  * @command: the command containing the path to change directory to
  *
- * Return: 0 on sucess, else 2 on error
+ * Return: 0 on success, else 2 on error
  */
 int handle_cd(char **command)
 {

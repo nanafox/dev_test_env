@@ -103,4 +103,9 @@ void _reverse(char *buffer, size_t len);
 void _itoa(size_t n, char *s);
 int _atoi(const char *s);
 
+int _setenv(const char *name, const char *value, int overwrite);
+int _unsetenv(const char *name);
+int handle_builtin(char **sub_command, char **commands, path_t *path_list,
+				   char *line);
+
 #endif /* MAIN_H */
