@@ -9,7 +9,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <dirent.h>
 #include <stdarg.h>
+#include <string.h>
 
 /* macros */
 
@@ -89,6 +91,7 @@ char **handle_variables(char **commands, int exit_code);
 int handle_exit(char *exit_code, int status,
 		void (*cleanup)(const char *format, ...),
 		char **sub_command, char **commands, path_t **path_list, char *line);
+int handle_cd(char **command);
 void _free_on_exit(const char *format, ...);
 
 void _reverse(char *buffer, size_t len);

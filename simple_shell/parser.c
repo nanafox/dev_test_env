@@ -57,13 +57,14 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 			free_str(commands);
 			return (0); /* probably just lots of tabs or spaces, maybe both */
 		}
-
 		sub_command = handle_variables(sub_command, exit_code);
 		if (!_strcmp(sub_command[0], "env"))
 			_printenv();
 		else if (!_strcmp(sub_command[0], "exit"))
 			exit_code = handle_exit(sub_command[1], exit_code,
 					_free_on_exit, sub_command, commands, &path_list, line);
+		else if (!_strcmp(sub_command[0], "cd"))
+			exit_code = handle_cd(sub_command);
 		else if (path_list != NULL) /* handle the command with the PATH variable */
 		{
 			exit_code = handle_with_path(path_list, sub_command);

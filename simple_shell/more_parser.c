@@ -126,3 +126,49 @@ void _free_on_exit(const char *format, ...)
 		format++;
 	}
 }
+
+/**
+ * handle_cd - handles the builtin `cd` command
+ * @command: the command containing the path to change directory to
+ *
+ * Return: 0 on sucess, else 2 on error
+ */
+int handle_cd(char **command)
+{
+	char *home = _getenv("HOME");
+	char *oldpath = _getenv("OLDPWD");
+	char pwd[BUFF_SIZE];
+	static size_t cd_err_count = 1;
+
+	getcwd(pwd, BUFF_SIZE);
+	oldpath = (oldpath) ? oldpath : pwd;
+
+	if (command[1] != NULL)
+	{
+		int dash = !_strcmp(command[1], "-");
+		char *path = ((dash) ? oldpath : command[1]);
+
+		if (chdir(path) == -1)
+		{
+			dprintf(STDERR_FILENO, "./hsh: %lu: cd: can't cd to %s\n",
+					cd_err_count, path);
+			cd_err_count++;
+			return (2);
+		}
+		if (dash)
+			printf("%s\n", path);
+
+		setenv("OLDPWD", pwd, 1);
+		setenv("PWD", path, 1);
+	}
+	else
+	{
+		if (chdir(home) == -1)
+			return (2);
+
+		setenv("OLDPWD", pwd, 1);
+		setenv("PWD", home, 1);
+	}
+
+	return (0);
+}

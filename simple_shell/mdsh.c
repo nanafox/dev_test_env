@@ -9,7 +9,7 @@
  */
 int main(int argc, char *argv[])
 {
-	char *line = NULL;
+	char prompt[BUFF_SIZE], *line = NULL;
 	size_t len = 0;
 	ssize_t n_read = 0;
 	int exit_code = 0, running = 1;
@@ -24,7 +24,12 @@ int main(int argc, char *argv[])
 	}
 	while (running)
 	{
-		printf("%s", (isatty(STDIN_FILENO)) ? "mdsh$ " : "");
+		char *username = _getenv("USER");
+		char *pwd = strrchr(_getenv("PWD"), '/') + 1;
+
+		sprintf(prompt, "[%s@msh %s]%% ", username,
+				(!_strcmp(pwd, username)) ? "~" : pwd);
+		printf("%s", (isatty(STDIN_FILENO)) ? prompt : "");
 		fflush(stdout);
 
 		n_read = _getline(&line, &len, STDIN_FILENO);
