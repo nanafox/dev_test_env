@@ -20,6 +20,9 @@
 #define CMD_NOT_FOUND 127
 #define PROMPT_SIZE 4096
 #define PATH_SIZE 2048
+#define NOT_BUILTIN 18
+#define RUNNING 1
+#define CMD_ERR 2
 
 /* function macros */
 
@@ -29,14 +32,13 @@
 #define isnegative(c) (((c) == '-') ? -1 : 1)
 #define issign(c) ((c) == '-' || (c) == '+')
 
-/* function prototypes */
+/* string handlers */
 
 size_t _strlen(const char *s);
 char *_strdup(const char *str);
-char *handle_comments(char *command);
 char *_strcpy(char *dest, const char *src);
 char *_strcat(char *dest, const char *src);
-char *_strchr(const char *s, const char c);
+char *_strchr(const char *s, int c);
 int _strcmp(const char *s1, const char *s2);
 char **_strtok(const char *str, const char *delim);
 char *_strncpy(char *dest, const char *src, size_t n);
@@ -44,6 +46,7 @@ int get_word_count(const char *str, const char *delim);
 char *_strstr(const char *haystack, const char *needle);
 char *_strpbrk(const char *s, const char *accept);
 size_t _strspn(const char *s, const char *accept);
+char *_strrchr(const char *s, int c);
 
 /* memory handlers */
 
@@ -62,7 +65,7 @@ ssize_t _getline(char **lineptr, size_t *n, int fd);
 /* shows the prompt in interactive mode */
 void show_prompt(void);
 
-/* environment variables */
+/* environment and PATH handlers */
 
 extern char **environ;
 
@@ -86,6 +89,7 @@ void print_path(path_t *list);
 
 /* parsers and executors */
 
+char *handle_comments(char *command);
 int parse_line(char *line, path_t *path_list);
 int execute_command(char *pathname, char *argv[]);
 int parse_and_execute(char **commands, path_t *path_list, char *line);
@@ -93,19 +97,23 @@ int handle_with_path(path_t *path_list, char **sub_command);
 int print_cmd_not_found(char **sub_command, char **commands, size_t index);
 int handle_file_as_input(char *filename, path_t *path_list);
 char **handle_variables(char **commands, int exit_code);
-int handle_exit(char *exit_code, int status,
-		void (*cleanup)(const char *format, ...),
-		char **sub_command, char **commands, path_t **path_list, char *line);
-int handle_cd(char **command);
 void _free_on_exit(const char *format, ...);
+
+/* numbers */
 
 void _reverse(char *buffer, size_t len);
 void _itoa(size_t n, char *s);
 int _atoi(const char *s);
 
+/* builtin handlers */
+
+int handle_cd(const char *pathname);
 int _setenv(const char *name, const char *value, int overwrite);
 int _unsetenv(const char *name);
 int handle_builtin(char **sub_command, char **commands, path_t *path_list,
 				   char *line, int exit_code);
+int handle_exit(char *exit_code, int status,
+		void (*cleanup)(const char *format, ...),
+		char **sub_command, char **commands, path_t **path_list, char *line);
 
 #endif /* MAIN_H */
