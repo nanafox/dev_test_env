@@ -124,8 +124,8 @@ int handle_exit(char *exit_code, int status,
 
 	if (isalpha(*exit_code) || _atoi(exit_code) < 0 || *exit_code == '-')
 	{
-		dprintf(STDERR_FILENO, "./hsh: %lu: exit: Illegal number: %s\n",
-				illegal_num_count, exit_code);
+		dprintf(STDERR_FILENO, "%s: %lu: exit: Illegal number: %s\n",
+				_getenv("_"), illegal_num_count, exit_code);
 		illegal_num_count++;
 		return (CMD_ERR);
 	}
@@ -145,7 +145,7 @@ int handle_cd(const char *pathname)
 {
 	char *home = _getenv("HOME");
 	char *oldpath = _getenv("OLDPWD");
-	char pwd[BUFF_SIZE];
+	char pwd[BUFF_SIZE], *prog = _getenv("_");
 	static size_t cd_err_count = 1;
 
 	getcwd(pwd, BUFF_SIZE);
@@ -163,9 +163,9 @@ int handle_cd(const char *pathname)
 		if (chdir(path) == -1)
 		{
 			if (strspn(pathname, "-") > 2)
-				dprintf(2, "./hsh: %lu: cd: Illegal option: --\n", cd_err_count);
+				dprintf(2, "%s: %lu: cd: Illegal option: --\n", prog, cd_err_count);
 			else
-				dprintf(2, "./hsh: %lu: cd: can't cd to %s\n", cd_err_count, pathname);
+				dprintf(2, "%s: %lu: cd: can't cd to %s\n", prog, cd_err_count, pathname);
 			cd_err_count++;
 			return (CMD_ERR);
 		}

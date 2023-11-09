@@ -127,8 +127,8 @@ int print_cmd_not_found(char **sub_command, char **commands, size_t index)
 {
 	static size_t err_count = 1;
 
-	dprintf(STDERR_FILENO, "./hsh: %lu: %s: not found\n", err_count,
-			sub_command[0]);
+	dprintf(STDERR_FILENO, "%s: %lu: %s: not found\n",
+		   _getenv("_"), err_count, sub_command[0]);
 	err_count++;
 
 	if (commands[index + 1] == NULL)
@@ -156,7 +156,7 @@ int handle_file_as_input(char *filename, path_t *path_list)
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 	{
-		dprintf(2, "./hsh: 0: Can't open %s\n", filename);
+		dprintf(2, "%s: 0: Can't open %s\n", _getenv("_"), filename);
 		return (CMD_NOT_FOUND);
 	}
 
