@@ -63,3 +63,35 @@ size_t _strspn(const char *s, const char *accept)
 	}
 	return (len);
 }
+
+/**
+ * _strrchr - locate character in string (reverse)
+ * @s: the string
+ * @c: the character to search
+ *
+ * Description: The _strrchr() function returns a pointer to the last
+ * occurrence of the character @c in the string @s.
+ *
+ * Return: a pointer to the matched character or NULL if the character
+ * is not found
+ */
+char *_strrchr(const char *s, int c)
+{
+	char *tmp_s = (char *)s;
+	size_t len = _strlen(tmp_s);
+
+	/* handle empty string */
+	if (s == NULL)
+		return (NULL);
+
+	while (tmp_s[--len] != '\0')
+	{
+		if (tmp_s[len] == c)
+			return (tmp_s + len); /* match found */
+	}
+	/* return a pointer to the null byte if 'c' is a null byte. */
+	if (c == '\0')
+		return (tmp_s);
+
+	return (NULL); /* no match found or end of string - return NULL */
+}
