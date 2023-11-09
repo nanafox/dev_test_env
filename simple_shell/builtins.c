@@ -1,57 +1,58 @@
 #include "main.h"
 
 /**
- * _setenv - Set a custom environment variable
- * @name: The name of the variable
- * @value: The value to set
- * @overwrite: If true, overwrite the variable if it exists
+ * _setenv - set a custom environment variable
+ * @name: the name of the variable
+ * @value: the value to set
+ * @overwrite: if true, overwrite the variable if it exists
  *
- * This function sets a custom environment variable with the given name and
- * value. If the variable already exists and overwrite is true, it will be
- * replaced.
+ * Description: This function sets a custom environment variable with the given
+ * name and value. If the variable already exists and overwrite is true, it
+ * will be replaced.
  *
  * Return: 0 on success, 1 on error
  */
 int _setenv(const char *name, const char *value, int overwrite)
 {
-	size_t len;
-	char *env_var;
+	size_t len, i;
+	char *env_var = NULL;
 
 	if (name == NULL || name[0] == '\0' || _strchr(name, '=') != NULL)
 	{
 		fprintf(stderr, "Invalid variable name: %s\n", name);
-		return (-1);
+		return (1);
 	}
-
 	/* check if the variable already exists */
 	if (_getenv(name) != NULL)
 	{
 		if (overwrite)
 		{
 			if (_unsetenv(name) != 0)
-			{
-				perror("_unsetenv");
 				return (1);
-			}
 		}
 		else
 			return (0); /* variable exists, and overwrite is false */
 	}
-
-	/* allocate memory for the new environment variable */
 	len = _strlen(name) + _strlen(value) + 2;
 	env_var = malloc(len);
 	if (env_var == NULL)
 		return (1);
 
-	snprintf(env_var, len, "%s=%s", name, value);
-	if (putenv(env_var) != 0) /* add the environment variable */
+	sprintf(env_var, "%s=%s", name, value);
+	for (i = 0; environ[i] != NULL; i++)
 	{
-		safe_free(env_var);
-		return (1);
+		if (_strncmp(environ[i], name, len) == 0 && environ[i][len] == '=')
+		{
+			environ[i] = env_var;
+			safe_free(env_var);
+			return (0);
+		}
 	}
-
+	/* the variable doesn't exist, create it */
+	environ[i++] = env_var;
+	environ[i] = NULL;
 	safe_free(env_var);
+
 	return (0);
 }
 
