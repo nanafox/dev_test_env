@@ -190,10 +190,12 @@ int handle_cd(const char *pathname)
  */
 void _printenv(void)
 {
-	int i;
+	char *argv[] = {"/bin/sh", "env", NULL};
+	int status;	
+	pid_t child = fork();
 
-	for (i = 0; environ[i] != NULL; i++)
-	{
-		printf("%s\n", environ[i]);
-	}
+	if (child == 0)
+		execve(argv[0], argv, environ);
+	else
+		waitpid(child, &status, 0);
 }
