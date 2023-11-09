@@ -35,8 +35,11 @@ int main(int argc, char *argv[])
 			return (-1);
 		}
 		if (n_read == 0) /* most definitely Ctrl+D or Ctrl+C was received */
+		{
+			if (isatty(STDIN_FILENO))
+				printf("\n");
 			break;
-
+		}
 		exit_code = parse_line(line, path_list);
 		safe_free(line);
 	}
