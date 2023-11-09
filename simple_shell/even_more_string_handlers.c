@@ -26,8 +26,6 @@ char *_strpbrk(const char *s, const char *accept)
 	return (NULL); /* no match found or end of string - return NULL */
 }
 
-#include "main.h"
-
 /**
  * _strspn - get length of a prefix substring
  * @s: string
@@ -94,4 +92,31 @@ char *_strrchr(const char *s, int c)
 		return (tmp_s);
 
 	return (NULL); /* no match found or end of string - return NULL */
+}
+
+/**
+ * _strncmp - compare at most n bytes of two strings
+ * @s1: the first string to be compared
+ * @s2: the second string to be compared
+ * @n: the maximum number of bytes to compare
+ *
+ * Return: 0 if the strings are equal, a negative value if s1 is less than s2,
+ *         or a positive value if s1 is greater than s2
+ */
+int _strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t i = 0;
+
+	while (*s1 == *s2 && i < n)
+	{
+		if (*s1 == '\0' || i + 1 == n)
+		{
+			return (0); /* both strings are equal or reached the end of comparison */
+		}
+		s1++;
+		s2++;
+		i++;
+	}
+
+	return ((*s1) - (*s2));
 }

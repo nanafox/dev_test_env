@@ -36,17 +36,18 @@
 
 size_t _strlen(const char *s);
 char *_strdup(const char *str);
+char *_strchr(const char *s, int c);
+char *_strrchr(const char *s, int c);
 char *_strcpy(char *dest, const char *src);
 char *_strcat(char *dest, const char *src);
-char *_strchr(const char *s, int c);
 int _strcmp(const char *s1, const char *s2);
-char **_strtok(const char *str, const char *delim);
-char *_strncpy(char *dest, const char *src, size_t n);
-int get_word_count(const char *str, const char *delim);
-char *_strstr(const char *haystack, const char *needle);
 char *_strpbrk(const char *s, const char *accept);
 size_t _strspn(const char *s, const char *accept);
-char *_strrchr(const char *s, int c);
+char **_strtok(const char *str, const char *delim);
+char *_strncpy(char *dest, const char *src, size_t n);
+int _strncmp(const char *s1, const char *s2, size_t n);
+int get_word_count(const char *str, const char *delim);
+char *_strstr(const char *haystack, const char *needle);
 
 /* memory handlers */
 

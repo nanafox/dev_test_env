@@ -26,19 +26,6 @@ char *_getenv(const char *name)
 }
 
 /**
- * _printenv - prints all environment variables
- */
-void _printenv(void)
-{
-	int i;
-
-	for (i = 0; environ[i] != NULL; i++)
-	{
-		printf("%s\n", environ[i]);
-	}
-}
-
-/**
  * build_path - builds a list of paths in the PATH environment variable
  * @head: a pointer to the head node
  *
