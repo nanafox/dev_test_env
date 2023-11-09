@@ -51,19 +51,20 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 	{
 		/* get the sub commands and work on them */
 		sub_command = _strtok(commands[i], NULL);
-
 		if (sub_command == NULL)
 		{
 			free_str(commands);
 			return (0); /* probably just lots of tabs or spaces, maybe both */
 		}
 		sub_command = handle_variables(sub_command, exit_code);
-		exit_code = handle_builtin(sub_command, commands, path_list, line);
-		if (exit_code != 18)
+		exit_code = handle_builtin(sub_command, commands, path_list,
+				line, exit_code);
+		if (exit_code != NOT_BUILTIN)
 		{
+			safe_free(commands[i]);
+			free_str(sub_command);
 			continue; /* shell builtin execute well */
 		}
-
 		if (path_list != NULL) /* handle the command with the PATH variable */
 		{
 			exit_code = handle_with_path(path_list, sub_command);
@@ -72,8 +73,7 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 		}
 		else
 		{
-			if (access(sub_command[0], X_OK) == 0 &&
-				_strchr(sub_command[0], '/'))
+			if (access(sub_command[0], X_OK) == 0 && _strchr(sub_command[0], '/'))
 				exit_code = execute_command(sub_command[0], sub_command);
 			else
 				exit_code = print_cmd_not_found(sub_command, commands, i);
@@ -156,8 +156,8 @@ int handle_file_as_input(char *filename, path_t *path_list)
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 	{
-		dprintf(2, "./hsh: 0: cannot open %s: No such file\n", filename);
-		return (2);
+		dprintf(2, "./hsh: 0: Can't open %s\n", filename);
+		return (CMD_NOT_FOUND);
 	}
 
 	n_read = _getline(&line, &n, fd);

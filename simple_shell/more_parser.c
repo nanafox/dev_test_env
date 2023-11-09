@@ -82,7 +82,7 @@ int handle_exit(char *exit_code, int status,
 		dprintf(STDERR_FILENO, "./hsh: %lu: exit: Illegal number: %s\n",
 				illegal_num_count, exit_code);
 		illegal_num_count++;
-		return (2);
+		return (CMD_ERR);
 	}
 
 	code = _atoi(exit_code);
@@ -110,18 +110,18 @@ void _free_on_exit(const char *format, ...)
 	{
 		switch (*format)
 		{
-		case 's':
-			line = va_arg(ap, char *);
-			safe_free(line);
-			break;
-		case 't':
-			free_str(va_arg(ap, char **));
-			break;
-		case 'p':
-			free_list(va_arg(ap, path_t **));
-			break;
-		default:
-			break;
+			case 's':
+				line = va_arg(ap, char *);
+				safe_free(line);
+				break;
+			case 't':
+				free_str(va_arg(ap, char **));
+				break;
+			case 'p':
+				free_list(va_arg(ap, path_t **));
+				break;
+			default:
+				break;
 		}
 		format++;
 	}
@@ -129,11 +129,11 @@ void _free_on_exit(const char *format, ...)
 
 /**
  * handle_cd - handles the builtin `cd` command
- * @command: the command containing the path to change directory to
+ * @pathname: the string containing the path to change directory to
  *
  * Return: 0 on success, else 2 on error
  */
-int handle_cd(char **command)
+int handle_cd(const char *pathname)
 {
 	char *home = _getenv("HOME");
 	char *oldpath = _getenv("OLDPWD");
@@ -142,23 +142,24 @@ int handle_cd(char **command)
 
 	getcwd(pwd, BUFF_SIZE);
 	oldpath = (oldpath) ? oldpath : pwd;
-
-	if (command[1] != NULL)
+	if (pathname != NULL)
 	{
-		int dash = !_strcmp(command[1], "-");
+		int dash = !_strcmp(pathname, "-") || !_strcmp(pathname, "--");
 		char path[PATH_SIZE];
 
-		if (!_strchr(command[1], '/') && !dash)
-			sprintf(path, "%s/%s", pwd, ((dash) ? oldpath : command[1]));
+		/* build the full path when relative paths are given */
+		if (!_strchr(pathname, '/') && !dash)
+			sprintf(path, "%s/%s", pwd, ((dash) ? oldpath : pathname));
 		else
-			sprintf(path, "%s", ((dash) ? oldpath : command[1]));
-
+			sprintf(path, "%s", ((dash) ? oldpath : pathname));
 		if (chdir(path) == -1)
 		{
-			dprintf(STDERR_FILENO, "./hsh: %lu: cd: can't cd to %s\n",
-					cd_err_count, path);
+			if (strspn(pathname, "-") > 2)
+				dprintf(2, "./hsh: %lu: cd: Illegal option: --\n", cd_err_count);
+			else
+				dprintf(2, "./hsh: %lu: cd: can't cd to %s\n", cd_err_count, pathname);
 			cd_err_count++;
-			return (2);
+			return (CMD_ERR);
 		}
 		if (dash)
 			printf("%s\n", oldpath);
@@ -169,10 +170,9 @@ int handle_cd(char **command)
 	else
 	{
 		if (chdir(home) == -1)
-			return (2);
+			return (CMD_ERR);
 		setenv("OLDPWD", pwd, 1);
 		setenv("PWD", home, 1);
 	}
-
 	return (0);
 }

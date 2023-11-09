@@ -1,7 +1,5 @@
 #include "main.h"
 
-static int exit_code;
-
 /**
  * main - the entry point for the shell
  * @argc: command line arguments counter
@@ -14,7 +12,7 @@ int main(int argc, char *argv[])
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t n_read = 0;
-	int running = 1;
+	int exit_code = 0;
 	path_t *path_list = NULL;
 
 	path_list = build_path(&path_list);
@@ -24,7 +22,7 @@ int main(int argc, char *argv[])
 		free_list(&path_list);
 		return (exit_code);
 	}
-	while (running)
+	while (RUNNING)
 	{
 		show_prompt();
 		fflush(stdout);
@@ -64,13 +62,13 @@ void show_prompt(void)
 		{
 			/* get the right directory name to show on the prompt */
 			pwd = (*pwd == '/' && *(pwd + 1) == '\0')
-					  ? pwd
-					  : (strrchr(pwd, '/') + 1);
+				? pwd
+				: (_strrchr(pwd, '/') + 1); /* show only the current directory */
 
 			sprintf(prompt, "[%s@msh %s]%% ", username,
 					(!_strcmp(pwd, username))
-						? "~"
-						: pwd); /* show '~' for $HOME directory */
+					? "~" /* show '~' for the user's $HOME directory */
+					: pwd);
 		}
 	}
 	else
@@ -93,22 +91,33 @@ void show_prompt(void)
  * @sub_command: the actual command
  * @path_list: a list of pathnames in the PATH variable
  * @line: the command line received
+ * @exit_code: the exit code to use
+ *
  * Return: exit code
  */
 int handle_builtin(char **sub_command, char **commands, path_t *path_list,
-				   char *line)
+		char *line, int exit_code)
 {
 	if (!_strcmp(sub_command[0], "env"))
+	{
 		_printenv();
+		return (0);
+	}
 	else if (!_strcmp(sub_command[0], "exit"))
+	{
 		return (handle_exit(sub_command[1], exit_code, _free_on_exit,
-							sub_command, commands, &path_list, line));
+					sub_command, commands, &path_list, line));
+	}
+
+	/* let's handle the builtin 'cd' command */
 	else if (!_strcmp(sub_command[0], "cd"))
-		return (handle_cd(sub_command));
+		return (handle_cd(sub_command[1]));
+
 	else if (!_strcmp(sub_command[0], "setenv"))
 		return (setenv(sub_command[1], sub_command[2], 1));
+
 	else if (!_strcmp(sub_command[0], "unsetenv"))
 		return (_unsetenv(sub_command[1]));
 
-	return (18);
+	return (NOT_BUILTIN); /* not a builtin command */
 }

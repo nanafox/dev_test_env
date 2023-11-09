@@ -47,7 +47,7 @@ int get_word_count(const char *str, const char *delim)
  * Return: a pointer to the matched character or NULL if the character
  * is not found
  */
-char *_strchr(const char *s, const char c)
+char *_strchr(const char *s, int c)
 {
 	char *tmp_s = (char *)s;
 
