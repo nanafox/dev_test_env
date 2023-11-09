@@ -106,6 +106,6 @@ int _atoi(const char *s);
 int _setenv(const char *name, const char *value, int overwrite);
 int _unsetenv(const char *name);
 int handle_builtin(char **sub_command, char **commands, path_t *path_list,
-				   char *line);
+				   char *line, int exit_code);
 
 #endif /* MAIN_H */
