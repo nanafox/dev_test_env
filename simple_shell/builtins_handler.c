@@ -29,8 +29,11 @@ int handle_builtin(char **sub_command, char **commands, path_t *path_list,
 		return (handle_cd(sub_command[1]));
 
 	else if (!_strcmp(sub_command[0], "setenv"))
-		return (setenv(sub_command[1], sub_command[2], 1));
-
+	{
+		if (sub_command[1] && sub_command[2])
+			return (setenv(sub_command[1], sub_command[2], 1));
+		return (1); /* inavlid number of parameters received */
+	}
 	else if (!_strcmp(sub_command[0], "unsetenv"))
 		return (_unsetenv(sub_command[1]));
 
