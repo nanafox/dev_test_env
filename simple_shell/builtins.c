@@ -190,12 +190,27 @@ int handle_cd(const char *pathname)
  */
 void _printenv(void)
 {
-	char *argv[] = {"/bin/sh", "env", NULL};
-	int status;	
-	pid_t child = fork();
+	int fd, status;
+	char *filename = "/tmp/env";
+	pid_t child;
 
-	if (child == 0)
-		execve(argv[0], argv, environ);
+	fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+		return;
+	if (write(fd, "env", 3) != -1)
+	{
+		char *argv[] = {"/bin/sh", "/tmp/env", NULL};
+
+		child = fork();
+		if (child == 0)
+			execve(argv[0], argv, environ);
+		else
+			waitpid(child, &status, 0);
+		close(fd);
+	}
 	else
-		waitpid(child, &status, 0);
+	{
+		close(fd);
+		return;
+	}
 }
