@@ -63,7 +63,7 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 		{
 			safe_free(commands[i]);
 			free_str(sub_command);
-			continue; /* shell builtin execute well */
+			continue; /* shell builtin executed well */
 		}
 		if (path_list != NULL) /* handle the command with the PATH variable */
 		{

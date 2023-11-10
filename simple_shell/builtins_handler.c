@@ -13,7 +13,7 @@
 int handle_builtin(char **sub_command, char **commands, path_t *path_list,
 		char *line, int exit_code)
 {
-	if (!_strcmp(sub_command[0], "env"))
+	if (!_strcmp(sub_command[0], "env") || !_strcmp(sub_command[0], "printenv"))
 	{
 		_printenv();
 		return (0);
