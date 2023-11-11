@@ -88,6 +88,49 @@ char *_getenv(const char *name);
 path_t *build_path(path_t **head);
 void print_path(path_t *list);
 
+/* numbers */
+
+void _reverse(char *buffer, size_t len);
+void _itoa(size_t n, char *s);
+int _atoi(const char *s);
+
+
+/* aliases */
+
+/**
+ * struct alias - the blueprint for the built-in alias command
+ * @name: the name of the alias
+ * @value: the value assigned to the name
+ * @next: a pointer to the next alias_t node
+ */
+typedef struct alias
+{
+	char *name;
+	char *value;
+	struct alias *next;
+} alias_t;
+
+void free_aliases(alias_t **head);
+char *extract_value(const char *value);
+void print_aliases(const alias_t *head);
+int unalias(alias_t **head, char **command_line);
+char *get_alias(alias_t *head, const char *name);
+int handle_alias(alias_t **head, char **commad_line);
+int print_alias(const alias_t *head, const char *name);
+alias_t *add_alias(alias_t **head, const char *name, const char *value);
+
+/* builtin handlers */
+
+int handle_cd(const char *pathname);
+int _setenv(const char *name, const char *value, int overwrite);
+int _unsetenv(const char *name);
+int handle_builtin(char **sub_command, char **commands, char *line,
+		alias_t *aliases, path_t *path_list, int exit_code);
+int handle_exit(char *exit_code, int status,
+		void (*cleanup)(const char *format, ...),
+		char **sub_command, char **commands, char *line, path_t **path_list,
+		alias_t **aliases);
+
 /* parsers and executors */
 
 char *handle_comments(char *command);
@@ -99,22 +142,7 @@ int print_cmd_not_found(char **sub_command, char **commands, size_t index);
 int handle_file_as_input(char *filename, path_t *path_list);
 char **handle_variables(char **commands, int exit_code);
 void _free_on_exit(const char *format, ...);
-
-/* numbers */
-
-void _reverse(char *buffer, size_t len);
-void _itoa(size_t n, char *s);
-int _atoi(const char *s);
-
-/* builtin handlers */
-
-int handle_cd(const char *pathname);
-int _setenv(const char *name, const char *value, int overwrite);
-int _unsetenv(const char *name);
-int handle_builtin(char **sub_command, char **commands, path_t *path_list,
-				   char *line, int exit_code);
-int handle_exit(char *exit_code, int status,
-		void (*cleanup)(const char *format, ...),
-		char **sub_command, char **commands, path_t **path_list, char *line);
+void parse_helper(char **commands, char **sub_command,
+		path_t *path_list, char *line, size_t index);
 
 #endif /* MAIN_H */
