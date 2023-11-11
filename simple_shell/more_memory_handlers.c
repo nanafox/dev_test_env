@@ -18,6 +18,25 @@ void free_list(path_t **head)
 }
 
 /**
+ * free_aliases - frees an alias_t list
+ * @head: a pointer to the list containing the aliases
+ */
+void free_aliases(alias_t **head)
+{
+	alias_t *current;
+
+	while (*head != NULL)
+	{
+		current = *head;
+		*head = (*head)->next;
+
+		/* free memory */
+		safe_free(current->name);
+		safe_free(current->value);
+		safe_free(current);
+	}
+}
+/**
  * _free_on_exit - frees dynamically allocated memory when the exit command is
  * issued on the command line
  * @format: the format of how dynamically allocated variables are given
@@ -25,6 +44,7 @@ void free_list(path_t **head)
  * Description: 's' is for a normal string (char *)
  *				't' is for an array of strings (char **)
  *				'p' is for the path_t list
+ *				'a' is for the alias_t list
  */
 void _free_on_exit(const char *format, ...)
 {
@@ -46,6 +66,9 @@ void _free_on_exit(const char *format, ...)
 				break;
 			case 'p':
 				free_list(va_arg(ap, path_t **));
+				break;
+			case 'a':
+				free_aliases(va_arg(ap, alias_t **));
 				break;
 			default:
 				break;
