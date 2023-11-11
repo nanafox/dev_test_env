@@ -73,19 +73,14 @@ void print_aliases(const alias_t *head)
  * @head: a pointer to the list of aliases
  * @command: a null-terminated array of aliases to remove
  *
- * Return: 0 on success, 1 on error
+ * Return: 0 if alias was found and removed successfully, else 1
  */
 int unalias(alias_t **head, char **command)
 {
 	alias_t *current, *prev;
 	size_t i;
 	char *name;
-	int exit_code = 1;
-
-	if (*head == NULL && command[1] == NULL)
-	{
-		return (0);
-	}
+	int exit_code = 1; /* assume failure by default */
 
 	current = *head;
 	for (i = 1; command[i] != NULL; i++)
@@ -108,7 +103,8 @@ int unalias(alias_t **head, char **command)
 			current = current->next;
 		}
 		current = *head; /* point back to head before next run */
-		if (command[i + 1] != NULL)
+
+		if (exit_code != 0)
 		{
 			dprintf(2, "unalias: %s not found\n", name);
 			exit_code = 1;
