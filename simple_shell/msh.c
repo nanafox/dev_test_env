@@ -1,4 +1,5 @@
 #include "main.h"
+static alias_t *aliases;
 
 /**
  * main - the entry point for the shell
@@ -43,8 +44,8 @@ int main(int argc, char *argv[])
 		exit_code = parse_line(line, path_list);
 		safe_free(line);
 	}
-	safe_free(line);
-	free_list(&path_list);
+
+	_free_on_exit("spa", line, &path_list, &aliases);
 
 	return (exit_code);
 }
