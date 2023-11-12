@@ -63,7 +63,7 @@ int handle_file_as_input(char *filename, path_t *path_list)
 {
 	char *line = NULL;
 	size_t n = 0;
-	int n_read, fd, exit_code;
+	int n_read, fd, exit_code = 0;
 
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
@@ -83,7 +83,7 @@ int handle_file_as_input(char *filename, path_t *path_list)
 	if (n_read)
 		exit_code = parse_line(line, path_list);
 
-	safe_free(line);
+	_free_on_exit("sp", line, &path_list);
 
 	return (exit_code);
 }

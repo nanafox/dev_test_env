@@ -1,4 +1,5 @@
 #include "main.h"
+
 static alias_t *aliases;
 
 /**
@@ -19,9 +20,7 @@ int main(int argc, char *argv[])
 	path_list = build_path(&path_list);
 	if (argc >= 2)
 	{
-		exit_code = handle_file_as_input(argv[1], path_list);
-		free_list(&path_list);
-		return (exit_code);
+		return (handle_file_as_input(argv[1], path_list));
 	}
 	while (RUNNING)
 	{
