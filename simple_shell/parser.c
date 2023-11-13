@@ -2,6 +2,8 @@
 
 static int exit_code; /* keeps track of all exit codes */
 static alias_t *aliases;
+int handle_logical_operators(char **commands, path_t *path_list, char *line);
+char *get_operator(char *str);
 
 /**
  * parse_line - parses the receive command line, processes it before handing it
@@ -31,7 +33,7 @@ int parse_line(char *line, path_t *path_list)
 		return (-1); /* an error occurred while getting the commands */
 	}
 
-	return (parse_and_execute(commands, path_list, line));
+	return (handle_logical_operators(commands, path_list, line));
 }
 
 /**
@@ -48,6 +50,7 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 	size_t i;
 	char **sub_command = NULL;
 
+	printf("I am running... no logicals\n");
 	for (i = 0; commands[i] != NULL; i++)
 	{
 		/* get the sub commands and work on them */
@@ -62,7 +65,6 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
 		parse_helper(commands, sub_command, path_list, line, i);
 	}
 
-	free_str(commands);
 	return (exit_code);
 }
 
@@ -120,33 +122,71 @@ void parse_helper(char **commands, char **sub_command,
 }
 
 /**
- * handle_with_path - handles commands when the PATH is set
+ * handle_logical_operators - handles logical operators in a command line
+ * @commands: an array of command line strings
  * @path_list: a list of pathnames in the PATH variable
- * @sub_command: the command to execute
+ * @line: the command line received
  *
- * Return: the exit code of the child process, else -1 if the command is not in
- * the PATH provided
+ * Return: the exit code of the executed program
  */
-int handle_with_path(path_t *path_list, char **sub_command)
+int handle_logical_operators(char **commands, path_t *path_list, char *line)
 {
-	char path[BUFF_SIZE];
+	ssize_t i, offset;
+	char **sub_command = NULL, *cmd = NULL, *operator = NULL, *next_cmd = NULL;
 
-	while (path_list != NULL)
+	for (i = 0; commands[i] != NULL; i++)
 	{
-		sprintf(path, "%s%s%s", path_list->pathname, "/", sub_command[0]);
-		if (access(path, X_OK) == 0)
+		operator = get_operator(commands[i]);
+
+		if (operator != NULL)
 		{
-			return (execute_command(path, sub_command));
+			offset = strcspn(commands[i], operator);
+			/* Extract the command before the operator */
+			cmd = strndup(commands[i], offset);
+			if (cmd == NULL)
+				return (0);
+
+			/* Tokenize the command */
+			sub_command = _strtok(cmd, NULL);
+			safe_free(cmd);
+
+			if (sub_command == NULL)
+			{
+				free_str(commands);
+				return (0);
+			}
+
+			/* Handle variables and execute the command */
+			sub_command = handle_variables(sub_command, exit_code);
+			parse_helper(commands, sub_command, path_list, line, i);
+			
+			next_cmd = &commands[i][offset + 2];
+			/* Check the exit code and continue accordingly */
+			if ((!_strcmp(operator, "&&") && exit_code == 0) ||
+					(!_strcmp(operator, "||") && exit_code != 0))
+			{
+				commands[i] = next_cmd;
+				handle_logical_operators(commands, path_list, line);
+			}
 		}
-		else if (access(sub_command[0], X_OK) == 0)
+		else
 		{
-			return (execute_command(sub_command[0], sub_command));
+			/* If no operator is found, tokenize and handle the command */
+			sub_command = _strtok(commands[i], NULL);
+			if (sub_command == NULL)
+			{
+				free_str(commands);
+				return (0);
+			}
+
+			sub_command = handle_variables(sub_command, exit_code);
+			parse_helper(commands, sub_command, path_list, line, i);
 		}
-		path_list = path_list->next;
 	}
 
-	return (-1);
+	return (exit_code);
 }
+
 
 /**
  * print_cmd_not_found - prints the command not found error
@@ -170,4 +210,37 @@ int print_cmd_not_found(char **sub_command, char **commands, size_t index)
 	}
 
 	return (0);
+}
+
+/**
+ * get_operator - returns the && or || logical operator in a string if found
+ * @str: the string to search
+ *
+ * Return: && or || if found, else NULL
+ */
+char *get_operator(char *str)
+{
+	char *operator = NULL;
+	int i;
+
+	if (str == NULL)
+		return (NULL);
+
+	/* Check for "||" operator */
+	for (i = 0; str[i] != '\0'; i++)
+	{
+		if (str[i] == '&' && str[i + 1] == '&')
+		{
+			operator = "&&";
+			break;
+		}
+		else if (str[i] == '|' && str[i + 1] == '|')
+		{
+			operator = "||";
+			break;
+		}
+	}
+
+
+	return (operator);
 }
