@@ -87,3 +87,32 @@ int handle_file_as_input(char *filename, path_t *path_list)
 
 	return (exit_code);
 }
+
+/**
+ * handle_with_path - handles commands when the PATH is set
+ * @path_list: a list of pathnames in the PATH variable
+ * @sub_command: the command to execute
+ *
+ * Return: the exit code of the child process, else -1 if the command is not in
+ * the PATH provided
+ */
+int handle_with_path(path_t *path_list, char **sub_command)
+{
+	char path[BUFF_SIZE];
+
+	while (path_list != NULL)
+	{
+		sprintf(path, "%s%s%s", path_list->pathname, "/", sub_command[0]);
+		if (access(path, X_OK) == 0)
+		{
+			return (execute_command(path, sub_command));
+		}
+		else if (access(sub_command[0], X_OK) == 0)
+		{
+			return (execute_command(sub_command[0], sub_command));
+		}
+		path_list = path_list->next;
+	}
+
+	return (-1);
+}
