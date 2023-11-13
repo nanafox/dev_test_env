@@ -117,7 +117,7 @@ int parse_and_execute(char **commands, char *cur_cmd, path_t *path_list,
 /**
  * parse_helper - performs extra parsing on behalf of the parse and execute
  * function
- * @commands: an array of commands receieved on the command line
+ * @commands: an array of commands received on the command line
  * @sub_command: an array of sub commands generated from the commands array
  * @path_list: a list of PATH directories
  * @line: the actual line the user typed on the prompt
