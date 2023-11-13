@@ -128,11 +128,6 @@ void free_str(char **str_array)
 {
 	int i = 0;
 
-	if (str_array == NULL)
-	{
-		return; /* there's nothing more to do here, it's empty */
-	}
-
 	/* free memory allocated for each string */
 	for (i = 0; str_array[i] != NULL; i++)
 	{
