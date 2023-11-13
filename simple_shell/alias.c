@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * add_alias - adds an alias to the linked list
@@ -94,7 +94,7 @@ int unalias(alias_t **head, char **command)
 					*head = (*head)->next;
 				else
 					prev->next = current->next;
-				_free_on_exit("ss", current->name, current->value);
+				multi_free("ss", current->name, current->value);
 				safe_free(current);
 				exit_code = 0;
 				break;

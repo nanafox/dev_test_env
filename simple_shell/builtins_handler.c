@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * handle_builtin - handles the builtin commands
@@ -21,7 +21,7 @@ int handle_builtin(char **sub_command, char **commands, char *line,
 	}
 	else if (!_strcmp(sub_command[0], "exit"))
 	{
-		return (handle_exit(sub_command[1], exit_code, _free_on_exit,
+		return (handle_exit(sub_command[1], exit_code, multi_free,
 					sub_command, commands, line, &path_list, &aliases));
 	}
 

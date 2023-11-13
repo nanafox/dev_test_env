@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * handle_alias - handles the processing of alias
@@ -34,15 +34,15 @@ int handle_alias(alias_t **head, char **command)
 				? extract_value(&tmp[offset + 1]) : _strdup(&tmp[offset + 1]);
 			if (value == NULL)
 			{
-				_free_on_exit("ss", value, name);
+				multi_free("ss", value, name);
 				return (-1);
 			}
 			if (add_alias(head, name, value) == NULL)
 			{
-				_free_on_exit("ss", value, name);
+				multi_free("ss", value, name);
 				return (-1);
 			}
-			_free_on_exit("ss", value, name);
+			multi_free("ss", value, name);
 		}
 		else
 			exit_code = print_alias(*head, command[i]);

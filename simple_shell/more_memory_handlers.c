@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * free_list - frees a path_t list
@@ -37,7 +37,7 @@ void free_aliases(alias_t **head)
 	}
 }
 /**
- * _free_on_exit - frees dynamically allocated memory when the exit command is
+ * multi_free - frees dynamically allocated memory when the exit command is
  * issued on the command line
  * @format: the format of how dynamically allocated variables are given
  *
@@ -46,7 +46,7 @@ void free_aliases(alias_t **head)
  *				'p' is for the path_t list
  *				'a' is for the alias_t list
  */
-void _free_on_exit(const char *format, ...)
+void multi_free(const char *format, ...)
 {
 	va_list ap;
 	char *line;

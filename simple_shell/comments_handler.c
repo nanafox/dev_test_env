@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * handle_comments - parses a command received on the shell and handles the '#'

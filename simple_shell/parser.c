@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 static int exit_code; /* keeps track of all exit codes */
 static alias_t *aliases;

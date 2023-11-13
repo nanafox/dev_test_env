@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * handle_variables - handles variables passed to the shell
@@ -83,7 +83,7 @@ int handle_file_as_input(char *filename, path_t *path_list)
 	if (n_read)
 		exit_code = parse_line(line, path_list);
 
-	_free_on_exit("sp", line, &path_list);
+	multi_free("sp", line, &path_list);
 
 	return (exit_code);
 }

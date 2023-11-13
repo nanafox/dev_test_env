@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 static alias_t *aliases;
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		safe_free(line);
 	}
 
-	_free_on_exit("spa", line, &path_list, &aliases);
+	multi_free("spa", line, &path_list, &aliases);
 
 	return (exit_code);
 }
