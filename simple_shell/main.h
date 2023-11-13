@@ -136,13 +136,16 @@ int handle_exit(char *exit_code, int status,
 char *handle_comments(char *command);
 int parse_line(char *line, path_t *path_list);
 int execute_command(char *pathname, char *argv[]);
-int parse_and_execute(char **commands, path_t *path_list, char *line);
+int parse_and_execute(char **commands, char *cur_cmd, path_t *path_list,
+		char *line, size_t index);
 int handle_with_path(path_t *path_list, char **sub_command);
 int print_cmd_not_found(char **sub_command, char **commands, size_t index);
 int handle_file_as_input(char *filename, path_t *path_list);
 char **handle_variables(char **commands, int exit_code);
 void _free_on_exit(const char *format, ...);
+int parse(char **commands, path_t *path_list, char *line);
 void parse_helper(char **commands, char **sub_command,
 		path_t *path_list, char *line, size_t index);
+char *get_operator(char *str);
 
 #endif /* MAIN_H */
