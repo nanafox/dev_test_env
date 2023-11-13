@@ -2,8 +2,6 @@
 
 static int exit_code; /* keeps track of all exit codes */
 static alias_t *aliases;
-int handle_logical_operators(char **commands, path_t *path_list, char *line);
-char *get_operator(char *str);
 
 /**
  * parse_line - parses the receive command line, processes it before handing it
@@ -33,38 +31,86 @@ int parse_line(char *line, path_t *path_list)
 		return (-1); /* an error occurred while getting the commands */
 	}
 
-	return (handle_logical_operators(commands, path_list, line));
+	exit_code = parse(commands, path_list, line);
+	return (exit_code);
+}
+
+/**
+ * parse - parses an array of commands received from the prompt
+ * @commands: an array of command line strings
+ * @path_list: a list of pathnames in the PATH variable
+ * @line: the command line received
+ *
+ * Return: the exit code of the executed program
+ */
+int parse(char **commands, path_t *path_list, char *line)
+{
+	ssize_t i, offset;
+	char **sub_command = NULL, *cmd = NULL, *operator = NULL, *next_cmd = NULL;
+
+	for (i = 0; commands[i] != NULL; i++)
+	{
+		operator = get_operator(commands[i]);
+
+		if (operator != NULL)
+		{
+			offset = strcspn(commands[i], operator);
+			/* extract the command before the operator */
+			cmd = strndup(commands[i], offset);
+			if (cmd == NULL)
+				return (0);
+
+			sub_command = _strtok(cmd, NULL);
+			safe_free(cmd);
+
+			if (sub_command == NULL)
+			{
+				free_str(commands);
+				return (0);
+			}
+
+			sub_command = handle_variables(sub_command, exit_code);
+			parse_helper(commands, sub_command, path_list, line, i);
+
+			next_cmd = &commands[i][offset + 2];
+			/* check the exit code and continue accordingly */
+			if ((!_strcmp(operator, "&&") && exit_code == 0) ||
+					(!_strcmp(operator, "||") && exit_code != 0))
+			{
+				commands[i] = next_cmd;
+				parse(commands, path_list, line);
+			}
+		}
+		else
+			parse_and_execute(commands, commands[i], path_list, line, i);
+	}
+	return (exit_code);
 }
 
 /**
  * parse_and_execute - parses each sub command line and executes it
  * @commands: an array of command line strings
  * @path_list: a list of pathnames in the PATH variable
+ * @cur_cmd: the current command in the commands array
  * @line: the command line received
+ * @index: the current index in commands array
  *
- * Return: the exit code of the executed program, else -1 if something goes
- * wrong
+ * Return: the exit code of the executed program
  */
-int parse_and_execute(char **commands, path_t *path_list, char *line)
+int parse_and_execute(char **commands, char *cur_cmd, path_t *path_list,
+		char *line, size_t index)
 {
-	size_t i;
 	char **sub_command = NULL;
 
-	printf("I am running... no logicals\n");
-	for (i = 0; commands[i] != NULL; i++)
+	/* get the sub commands and work on them */
+	sub_command = _strtok(cur_cmd, NULL);
+	if (sub_command == NULL)
 	{
-		/* get the sub commands and work on them */
-		sub_command = _strtok(commands[i], NULL);
-		if (sub_command == NULL)
-		{
-			free_str(commands);
-			return (0); /* probably just lots of tabs or spaces, maybe both */
-		}
-
-		sub_command = handle_variables(sub_command, exit_code);
-		parse_helper(commands, sub_command, path_list, line, i);
+		return (0); /* probably just lots of tabs or spaces, maybe both */
 	}
 
+	sub_command = handle_variables(sub_command, exit_code);
+	parse_helper(commands, sub_command, path_list, line, index);
 	return (exit_code);
 }
 
@@ -75,7 +121,7 @@ int parse_and_execute(char **commands, path_t *path_list, char *line)
  * @sub_command: an array of sub commands generated from the commands array
  * @path_list: a list of PATH directories
  * @line: the actual line the user typed on the prompt
- * @index: the current index in sub_commands array
+ * @index: the current index in commands array
  */
 void parse_helper(char **commands, char **sub_command,
 		path_t *path_list, char *line, size_t index)
@@ -122,73 +168,6 @@ void parse_helper(char **commands, char **sub_command,
 }
 
 /**
- * handle_logical_operators - handles logical operators in a command line
- * @commands: an array of command line strings
- * @path_list: a list of pathnames in the PATH variable
- * @line: the command line received
- *
- * Return: the exit code of the executed program
- */
-int handle_logical_operators(char **commands, path_t *path_list, char *line)
-{
-	ssize_t i, offset;
-	char **sub_command = NULL, *cmd = NULL, *operator = NULL, *next_cmd = NULL;
-
-	for (i = 0; commands[i] != NULL; i++)
-	{
-		operator = get_operator(commands[i]);
-
-		if (operator != NULL)
-		{
-			offset = strcspn(commands[i], operator);
-			/* Extract the command before the operator */
-			cmd = strndup(commands[i], offset);
-			if (cmd == NULL)
-				return (0);
-
-			/* Tokenize the command */
-			sub_command = _strtok(cmd, NULL);
-			safe_free(cmd);
-
-			if (sub_command == NULL)
-			{
-				free_str(commands);
-				return (0);
-			}
-
-			/* Handle variables and execute the command */
-			sub_command = handle_variables(sub_command, exit_code);
-			parse_helper(commands, sub_command, path_list, line, i);
-			
-			next_cmd = &commands[i][offset + 2];
-			/* Check the exit code and continue accordingly */
-			if ((!_strcmp(operator, "&&") && exit_code == 0) ||
-					(!_strcmp(operator, "||") && exit_code != 0))
-			{
-				commands[i] = next_cmd;
-				handle_logical_operators(commands, path_list, line);
-			}
-		}
-		else
-		{
-			/* If no operator is found, tokenize and handle the command */
-			sub_command = _strtok(commands[i], NULL);
-			if (sub_command == NULL)
-			{
-				free_str(commands);
-				return (0);
-			}
-
-			sub_command = handle_variables(sub_command, exit_code);
-			parse_helper(commands, sub_command, path_list, line, i);
-		}
-	}
-
-	return (exit_code);
-}
-
-
-/**
  * print_cmd_not_found - prints the command not found error
  * @sub_command: the actual command executed
  * @commands: a list of commands received on the command line
@@ -210,37 +189,4 @@ int print_cmd_not_found(char **sub_command, char **commands, size_t index)
 	}
 
 	return (0);
-}
-
-/**
- * get_operator - returns the && or || logical operator in a string if found
- * @str: the string to search
- *
- * Return: && or || if found, else NULL
- */
-char *get_operator(char *str)
-{
-	char *operator = NULL;
-	int i;
-
-	if (str == NULL)
-		return (NULL);
-
-	/* Check for "||" operator */
-	for (i = 0; str[i] != '\0'; i++)
-	{
-		if (str[i] == '&' && str[i + 1] == '&')
-		{
-			operator = "&&";
-			break;
-		}
-		else if (str[i] == '|' && str[i + 1] == '|')
-		{
-			operator = "||";
-			break;
-		}
-	}
-
-
-	return (operator);
 }
