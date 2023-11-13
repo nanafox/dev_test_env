@@ -32,6 +32,7 @@ int parse_line(char *line, path_t *path_list)
 	}
 
 	exit_code = parse(commands, path_list, line);
+	free_str(commands);
 	return (exit_code);
 }
 
@@ -46,12 +47,12 @@ int parse_line(char *line, path_t *path_list)
 int parse(char **commands, path_t *path_list, char *line)
 {
 	ssize_t i, offset;
-	char **sub_command = NULL, *cmd = NULL, *operator = NULL, *next_cmd = NULL;
+	char **sub_command = NULL, *cmd = NULL, *operator = NULL;
+	char *next_cmd = NULL, *temp_next_cmd = NULL;
 
 	for (i = 0; commands[i] != NULL; i++)
 	{
 		operator = get_operator(commands[i]);
-
 		if (operator != NULL)
 		{
 			offset = strcspn(commands[i], operator);
@@ -59,27 +60,27 @@ int parse(char **commands, path_t *path_list, char *line)
 			cmd = strndup(commands[i], offset);
 			if (cmd == NULL)
 				return (0);
-
 			sub_command = _strtok(cmd, NULL);
 			safe_free(cmd);
-
 			if (sub_command == NULL)
-			{
-				free_str(commands);
 				return (0);
-			}
-
 			sub_command = handle_variables(sub_command, exit_code);
 			parse_helper(commands, sub_command, path_list, line, i);
 
-			next_cmd = &commands[i][offset + 2];
-			/* check the exit code and continue accordingly */
+			temp_next_cmd = _strdup(&commands[i][offset + 2]);
+			safe_free(next_cmd);
+			safe_free(commands[i]);
+
+			/* check the exit code and react accordingly */
 			if ((!_strcmp(operator, "&&") && exit_code == 0) ||
-					(!_strcmp(operator, "||") && exit_code != 0))
+				(!_strcmp(operator, "||") && exit_code != 0))
 			{
-				commands[i] = next_cmd;
+				commands[i] = temp_next_cmd;
 				parse(commands, path_list, line);
+				next_cmd = temp_next_cmd;
 			}
+			else
+				safe_free(temp_next_cmd);
 		}
 		else
 			parse_and_execute(commands, commands[i], path_list, line, i);
@@ -98,7 +99,7 @@ int parse(char **commands, path_t *path_list, char *line)
  * Return: the exit code of the executed program
  */
 int parse_and_execute(char **commands, char *cur_cmd, path_t *path_list,
-		char *line, size_t index)
+					  char *line, size_t index)
 {
 	char **sub_command = NULL;
 
@@ -109,8 +110,12 @@ int parse_and_execute(char **commands, char *cur_cmd, path_t *path_list,
 		return (0); /* probably just lots of tabs or spaces, maybe both */
 	}
 
+	/* check for variables */
 	sub_command = handle_variables(sub_command, exit_code);
 	parse_helper(commands, sub_command, path_list, line, index);
+
+	/* cleanup and leave */
+	safe_free(commands[index]);
 	return (exit_code);
 }
 
@@ -123,12 +128,13 @@ int parse_and_execute(char **commands, char *cur_cmd, path_t *path_list,
  * @line: the actual line the user typed on the prompt
  * @index: the current index in commands array
  */
-void parse_helper(char **commands, char **sub_command,
-		path_t *path_list, char *line, size_t index)
+void parse_helper(char **commands, char **sub_command, path_t *path_list,
+				  char *line, size_t index)
 {
 	char *alias_value;
 
-	if (!_strcmp(sub_command[0], "alias") || !_strcmp(sub_command[0], "unalias"))
+	if (!_strcmp(sub_command[0], "alias") ||
+		!_strcmp(sub_command[0], "unalias"))
 	{
 		exit_code = handle_alias(&aliases, sub_command);
 		free_str(sub_command);
@@ -143,7 +149,7 @@ void parse_helper(char **commands, char **sub_command,
 		safe_free(alias_value);
 	}
 	exit_code = handle_builtin(sub_command, commands, line, aliases, path_list,
-			exit_code);
+							   exit_code);
 	if (exit_code != NOT_BUILTIN)
 	{
 		free_str(sub_command);
@@ -179,8 +185,8 @@ int print_cmd_not_found(char **sub_command, char **commands, size_t index)
 {
 	static size_t err_count = 1;
 
-	dprintf(STDERR_FILENO, "%s: %lu: %s: not found\n",
-			_getenv("_"), err_count, sub_command[0]);
+	dprintf(STDERR_FILENO, "%s: %lu: %s: not found\n", _getenv("_"), err_count,
+			sub_command[0]);
 	err_count++;
 
 	if (commands[index + 1] == NULL)
