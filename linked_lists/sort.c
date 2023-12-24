@@ -12,7 +12,7 @@ Node *sort(Node **head, int (*compare)(int x, int y))
 	Node *x, *y;
 	int tmp;
 	
-	if (*head == NULL || head == NULL)
+	if (head == NULL || *head == NULL)
 	{
 		return (NULL); /* list is empty */
 	}
@@ -35,7 +35,6 @@ Node *sort(Node **head, int (*compare)(int x, int y))
 		}
 		x = x->next;
 	}
-
 
 	return (*head);
 }
