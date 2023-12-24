@@ -68,7 +68,7 @@ void free_list(Node **head)
  */
 void _free(void **ptr)
 {
-	if (ptr != NULL || *ptr != NULL)
+	if (ptr != NULL && *ptr != NULL)
 	{
 		free(*ptr);
 		*ptr = NULL;
