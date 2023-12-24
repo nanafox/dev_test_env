@@ -1,5 +1,11 @@
 #include "node.h"
 
+/**
+ * list_len - returns the number of nodes in a linked list
+ * @head: the starting point of the linked list
+ *
+ * Return: the number of nodes in the linked list
+ */
 size_t list_len(Node *head)
 {
 	size_t node_count = 0;
@@ -18,6 +24,12 @@ size_t list_len(Node *head)
 	return (node_count);
 }
 
+/**
+ * print_list - prints all data elements of the linked list
+ * @head: the starting point of the linked list
+ *
+ * Return: the number of nodes printed
+ */
 size_t print_list(Node *head)
 {
 	size_t node_count = 0;
@@ -38,6 +50,10 @@ size_t print_list(Node *head)
 	return (node_count);
 }
 
+/**
+ * free_list - frees memory for the linked list
+ * @head: a pointer to the starting pointing of the list (a double pointer)
+ */
 void free_list(Node **head)
 {
 	Node *tmp_head;
